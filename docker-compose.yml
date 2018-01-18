@@ -1,0 +1,85 @@
+version: '2'
+
+services:
+
+    autoland.treestatus:
+        #build: https://github.com/globau/conduit-autoland-treestatus.git
+        #image: globau:conduit-autoland-treestatus
+        build: ../conduit-autoland-treestatus
+        restart: always
+
+    autoland.hg-init:
+        #build: https://github.com/globau/conduit-autoland-hg.git
+        #image: globau:conduit-autoland-hg
+        build: ../conduit-autoland-hg
+        command: init
+        volumes:
+            - autoland-hg:/repos
+
+    autoland.hg:
+        #build: https://github.com/globau/conduit-autoland-hg.git
+        #image: globau:conduit-autoland-hg
+        build: ../conduit-autoland-hg
+        restart: always
+        depends_on:
+            - autoland.hg-init
+        ports:
+            - "8101:${PORT}"
+        volumes:
+            - autoland-hg:/repos
+
+    autoland.db:
+        image: postgres:10.1-alpine
+        restart: always
+        environment:
+            POSTGRES_DB: ${DATABASE_NAME}
+            POSTGRES_USER: ${DATABASE_USER}
+            POSTGRES_PASSWORD: ${DATABASE_PASS}
+        volumes:
+            - autoland-db:/var/lib/postgresql
+
+    autoland.transplant-init:
+        #build: https://github.com/globau/conduit-autoland-transplant.git
+        #image: globau:conduit-autoland-transplant
+        build: ../conduit-autoland-transplant
+        command: init
+        depends_on:
+            - autoland.db
+        volumes:
+            - autoland-transplant:/repos
+        links:
+            - autoland.db:${DATABASE_HOST}
+
+    autoland.transplant-api:
+        #build: https://github.com/globau/conduit-autoland-transplant.git
+        #image: globau:conduit-autoland-transplant
+        build: ../conduit-autoland-transplant
+        restart: always
+        command: api
+        depends_on:
+            - autoland.db
+            - autoland.transplant-init
+        ports:
+            - "8100:${PORT}"
+        links:
+            - autoland.db:${DATABASE_HOST}
+            - autoland.hg:${REPO_HOST}
+
+    autoland.transplant-daemon:
+        #build: https://github.com/globau/conduit-autoland-transplant.git
+        #image: globau:conduit-autoland-transplant
+        build: ../conduit-autoland-transplant
+        restart: always
+        command: daemon
+        depends_on:
+            - autoland.db
+            - autoland.transplant-init
+        links:
+            - autoland.db:${DATABASE_HOST}
+            - autoland.hg:${REPO_HOST}
+            - autoland.treestatus:treestatus
+
+volumes:
+    autoland-hg:
+    autoland-db:
+    autoland-transplant:
