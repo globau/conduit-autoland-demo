@@ -1,3 +1,13 @@
 Start up a demo autoland-transplant environment.
 
-Edit `.env` to customise settings.
+Edit `.env` to customise settings; it's likely you'd only need to adjust the
+"exposed ports" settings.
+
+Once the environment is running:
+
+    1. Clone the repository with `clone-repo.py`. 
+       This will create a `test-repo` sub-directory.
+    2. cd into `test-repo` and make changes.
+    3. Use `hg` to commit your changes.
+    4. Run `../post-to-autoland.py` to post draft commits to autoland.
+    5. Run `hg pull` to update the commit's phase.

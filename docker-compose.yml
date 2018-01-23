@@ -18,7 +18,7 @@ services:
         depends_on:
             - autoland.hg-init
         ports:
-            - "8101:${PORT}"
+            - "${HOST_HGWEB}:${PORT}"
         volumes:
             - autoland-hg:/repos
 
@@ -50,7 +50,7 @@ services:
             - autoland.db
             - autoland.transplant-init
         ports:
-            - "8100:${PORT}"
+            - "${HOST_AUTOLAND}:${PORT}"
         links:
             - autoland.db:${DATABASE_HOST}
             - autoland.hg:${REPO_HOST}
@@ -59,6 +59,8 @@ services:
         image: globau/conduit-autoland-transplant
         restart: always
         command: daemon
+        environment:
+            TREESTATUS_URL: "http://treestatus:${PORT}/%s"
         depends_on:
             - autoland.db
             - autoland.transplant-init
