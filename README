@@ -5,7 +5,7 @@ Edit `.env` to customise settings; it's likely you'd only need to adjust the
 
 Once the environment is running:
 
-    1. Clone the repository with `clone-repo.py`. 
+    1. Clone the repository with `clone-repo.py`.
        This will create a `test-repo` sub-directory.
     2. cd into `test-repo` and make changes.
     3. Use `hg` to commit your changes.
