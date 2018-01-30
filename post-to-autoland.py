@@ -49,13 +49,13 @@ for commit_line in commit_log.splitlines():
         continue
 
     # Fill in job details from commit.
-    job['rev'] = m['rev']
-    job['ldap_username'] = email.utils.parseaddr(m['user'])[1]
+    job['rev'] = m.group('rev')
+    job['ldap_username'] = email.utils.parseaddr(m.group('user'))[1]
     job['patch'] = base64.b64encode(
-        subprocess.check_output(['hg', 'export', '-r', m['node']])
+        subprocess.check_output(['hg', 'export', '-r', m.group('node')])
     ).decode('utf-8')
 
-    print('Posting {}'.format(m['node']))
+    print('Posting {}'.format(m.group('node')))
     print(job)
 
     # HTTP Auth
