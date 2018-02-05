@@ -3,17 +3,17 @@ version: '2'
 services:
 
     autoland.treestatus:
-        image: globau/conduit-autoland-treestatus
+        image: mozilla/autolandtreestatus
         restart: always
 
     autoland.hg-init:
-        image: globau/conduit-autoland-hg
+        image: mozilla/autolandhg
         command: init
         volumes:
             - autoland-hg:/repos
 
     autoland.hg:
-        image: globau/conduit-autoland-hg
+        image: mozilla/autolandhg
         restart: always
         depends_on:
             - autoland.hg-init
@@ -33,7 +33,7 @@ services:
             - autoland-db:/var/lib/postgresql
 
     autoland.transplant-init:
-        image: globau/conduit-autoland-transplant
+        image: mozilla/autolandtransplant
         command: init
         depends_on:
             - autoland.db
@@ -43,7 +43,7 @@ services:
             - autoland.db:${DATABASE_HOST}
 
     autoland.transplant-api:
-        image: globau/conduit-autoland-transplant
+        image: mozilla/autolandtransplant
         restart: always
         command: api
         depends_on:
@@ -56,7 +56,7 @@ services:
             - autoland.hg:${REPO_HOST}
 
     autoland.transplant-daemon:
-        image: globau/conduit-autoland-transplant
+        image: mozilla/autolandtransplant
         restart: always
         command: daemon
         environment:
